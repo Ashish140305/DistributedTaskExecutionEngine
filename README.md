@@ -7,32 +7,32 @@ A production-quality **Distributed Task Execution Engine** built with Java 21, S
 ```
                     ┌─────────────────────────────┐
                     │      REST Client            │
-                    │  POST /api/jobs              │
-                    │  GET  /api/jobs/{id}         │
+                    │  POST /api/jobs             │
+                    │  GET  /api/jobs/{id}        │
                     └─────────────┬───────────────┘
                                   │
-                    ┌─────────────▼───────────────┐
-                    │    Coordinator Service       │
-                    │    (Master Node)             │
-                    │                              │
-                    │  • Job Management            │
-                    │  • Task Scheduling           │
-                    │  • Worker Registry           │
-                    │  • Heartbeat Monitoring      │
-                    │  • Fault Recovery            │
-                    │                              │
-                    │  REST: 8080 | gRPC: 9090     │
-                    └──┬──────────┬──────────┬─────┘
+                    ┌─────────────▼──────────────┐
+                    │    Coordinator Service      │
+                    │    (Master Node)            │
+                    │                             │
+                    │  • Job Management           │
+                    │  • Task Scheduling          │
+                    │  • Worker Registry          │
+                    │  • Heartbeat Monitoring     │
+                    │  • Fault Recovery           │
+                    │                             │
+                    │  REST: 8080 | gRPC: 9090    │
+                    └──┬──────────┬──────────┬────┘
                        │          │          │
               ┌────────▼──┐ ┌────▼─────┐ ┌──▼────────┐
-              │ Worker-1   │ │ Worker-2  │ │ Worker-3   │
-              │ gRPC:9091  │ │ gRPC:9092 │ │ gRPC:9093  │
-              │ HTTP:8081  │ │ HTTP:8082 │ │ HTTP:8083  │
-              └────────────┘ └──────────┘ └────────────┘
+              │ Worker-1  │ │ Worker-2 │ │ Worker-3  │
+              │ gRPC:9091 │ │ gRPC:9092│ │ gRPC:9093 │
+              │ HTTP:8081 │ │ HTTP:8082│ │ HTTP:8083 │
+              └───────────┘ └──────────┘ └───────────┘
                        │          │          │
                     ┌──▼──────────▼──────────▼─────┐
-                    │       PostgreSQL               │
-                    │       Port: 5432               │
+                    │       PostgreSQL             │
+                    │       Port: 5432             │
                     └──────────────────────────────┘
 ```
 
