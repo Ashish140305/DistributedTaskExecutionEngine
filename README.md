@@ -12,17 +12,17 @@ A production-quality **Distributed Task Execution Engine** built with Java 21, S
                     └─────────────┬───────────────┘
                                   │
                     ┌─────────────▼──────────────┐
-                    │    Coordinator Service      │
-                    │    (Master Node)            │
-                    │                             │
-                    │  • Job Management           │
-                    │  • Task Scheduling          │
-                    │  • Worker Registry          │
-                    │  • Heartbeat Monitoring     │
-                    │  • Fault Recovery           │
-                    │                             │
-                    │  REST: 8080 | gRPC: 9090    │
-                    └──┬──────────┬──────────┬────┘
+                    │    Coordinator Service     │
+                    │    (Master Node)           │
+                    │                            │
+                    │  • Job Management          │
+                    │  • Task Scheduling         │
+                    │  • Worker Registry         │
+                    │  • Heartbeat Monitoring    │
+                    │  • Fault Recovery          │
+                    │                            │
+                    │  REST: 8080 | gRPC: 9090   │
+                    └──┬──────────┬──────────┬───┘
                        │          │          │
               ┌────────▼──┐ ┌────▼─────┐ ┌──▼────────┐
               │ Worker-1  │ │ Worker-2 │ │ Worker-3  │
