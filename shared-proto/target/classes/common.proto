@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package taskengine;
+
+option java_package = "com.taskengine.proto";
+option java_outer_classname = "CommonProto";
+option java_multiple_files = true;
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum JobStatus {
+    JOB_STATUS_UNSPECIFIED = 0;
+    JOB_STATUS_SUBMITTED = 1;
+    JOB_STATUS_RUNNING = 2;
+    JOB_STATUS_COMPLETED = 3;
+    JOB_STATUS_FAILED = 4;
+    JOB_STATUS_CANCELLED = 5;
+}
+
+enum TaskStatus {
+    TASK_STATUS_UNSPECIFIED = 0;
+    TASK_STATUS_PENDING = 1;
+    TASK_STATUS_ASSIGNED = 2;
+    TASK_STATUS_RUNNING = 3;
+    TASK_STATUS_COMPLETED = 4;
+    TASK_STATUS_FAILED = 5;
+    TASK_STATUS_RETRYING = 6;
+    TASK_STATUS_CANCELLED = 7;
+}
+
+enum WorkerStatus {
+    WORKER_STATUS_UNSPECIFIED = 0;
+    WORKER_STATUS_ACTIVE = 1;
+    WORKER_STATUS_UNHEALTHY = 2;
+    WORKER_STATUS_DEAD = 3;
+}
+
+// ============================================================
+// Messages
+// ============================================================
+
+message WorkerInfo {
+    string worker_id = 1;
+    string hostname = 2;
+    int32 port = 3;
+    WorkerStatus status = 4;
+    int32 running_tasks = 5;
+    int32 max_concurrent_tasks = 6;
+    int64 last_heartbeat_ms = 7;
+}
+
+message JobInfo {
+    string job_id = 1;
+    string name = 2;
+    string type = 3;
+    JobStatus status = 4;
+    string input_data = 5;
+    int32 total_tasks = 6;
+    int32 completed_tasks = 7;
+    int32 failed_tasks = 8;
+    int64 created_at_ms = 9;
+    int64 updated_at_ms = 10;
+    int64 completed_at_ms = 11;
+}
+
+message TaskInfo {
+    string task_id = 1;
+    string job_id = 2;
+    string worker_id = 3;
+    TaskStatus status = 4;
+    string type = 5;
+    string input_data = 6;
+    string result_data = 7;
+    int32 retry_count = 8;
+    int32 max_retries = 9;
+    string error_message = 10;
+    int64 created_at_ms = 11;
+    int64 started_at_ms = 12;
+    int64 completed_at_ms = 13;
+}
+
+message TaskResultInfo {
+    string result_id = 1;
+    string task_id = 2;
+    string result_data = 3;
+    int64 execution_time_ms = 4;
+    int32 attempt_number = 5;
+    string status = 6;
+    string error_message = 7;
+}

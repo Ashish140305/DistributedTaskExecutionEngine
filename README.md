@@ -160,15 +160,22 @@ distributed-task-engine/
 
 ## Local Development
 
+When running the Java code directly on your machine (outside of Docker), you still need PostgreSQL running in the background.
+
 ```bash
-# Build all modules
+# 1. Start the database via Docker
+cd docker
+docker compose up -d postgres
+
+# 2. Build all modules from the root directory
+cd ..
 mvn clean install
 
-# Run coordinator (requires PostgreSQL running)
+# 3. Run coordinator locally
 cd coordinator-service
 mvn spring-boot:run
 
-# Run worker (requires coordinator running)
+# 4. Run worker locally (in a new terminal)
 cd worker-service
 mvn spring-boot:run
 ```

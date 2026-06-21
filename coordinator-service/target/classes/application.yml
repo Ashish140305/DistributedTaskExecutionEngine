@@ -5,7 +5,7 @@ spring:
   application:
     name: coordinator-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/taskengine
+    url: jdbc:postgresql://localhost:5433/taskengine
     username: taskengine
     password: taskengine
     driver-class-name: org.postgresql.Driver

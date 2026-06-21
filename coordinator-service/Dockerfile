@@ -33,7 +33,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 WORKDIR /app
 
-COPY --from=build /app/coordinator-service/target/*.jar app.jar
+COPY --from=build /app/coordinator-service/target/*-exec.jar app.jar
 
 RUN chown -R appuser:appgroup /app
 

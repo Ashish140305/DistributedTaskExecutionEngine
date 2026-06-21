@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package taskengine;
+
+option java_package = "com.taskengine.proto";
+option java_outer_classname = "WorkerServiceProto";
+option java_multiple_files = true;
+
+import "common.proto";
+
+// ============================================================
+// Worker gRPC Service
+// ============================================================
+// Each worker exposes this service. The coordinator calls it
+// to assign tasks, cancel tasks, and query worker status.
+// ============================================================
+
+service WorkerService {
+
+    // Task assignment — coordinator pushes a task to the worker
+    rpc AssignTask(AssignTaskRequest) returns (AssignTaskResponse);
+
+    // Task cancellation — coordinator tells worker to stop a task
+    rpc CancelTask(CancelTaskRequest) returns (CancelTaskResponse);
+
+    // Status query — coordinator checks worker health and load
+    rpc GetWorkerStatus(GetWorkerStatusRequest) returns (GetWorkerStatusResponse);
+}
+
+// ============================================================
+// Request / Response Messages
+// ============================================================
+
+// --- AssignTask ---
+
+message AssignTaskRequest {
+    string task_id = 1;
+    string job_id = 2;
+    string type = 3;
+    string input_data = 4;
+    map<string, string> parameters = 5;
+    int32 retry_count = 6;
+    int32 max_retries = 7;
+}
+
+message AssignTaskResponse {
+    bool accepted = 1;
+    string message = 2;
+}
+
+// --- CancelTask ---
+
+message CancelTaskRequest {
+    string task_id = 1;
+    string reason = 2;
+}
+
+message CancelTaskResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// --- GetWorkerStatus ---
+
+message GetWorkerStatusRequest {
+    string worker_id = 1;
+}
+
+message GetWorkerStatusResponse {
+    WorkerInfo worker = 1;
+    repeated TaskInfo running_tasks = 2;
+}
