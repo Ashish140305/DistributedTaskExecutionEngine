@@ -1,0 +1,59 @@
+# ===========================================================
+# Worker Service Configuration
+# ===========================================================
+
+spring:
+  application:
+    name: worker-service
+
+# -----------------------------------------------------------
+# Embedded HTTP server (actuator & metrics)
+# -----------------------------------------------------------
+server:
+  port: 8081
+
+# -----------------------------------------------------------
+# gRPC Server — accepts task assignments from coordinator
+# -----------------------------------------------------------
+grpc:
+  server:
+    port: 9091
+  client:
+    coordinator:
+      address: static://localhost:9090
+      negotiation-type: plaintext
+
+# -----------------------------------------------------------
+# Worker-specific settings
+# -----------------------------------------------------------
+worker:
+  max-concurrent-tasks: 4
+  heartbeat-interval-ms: 5000
+
+# -----------------------------------------------------------
+# Actuator & Management Endpoints
+# -----------------------------------------------------------
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+
+# -----------------------------------------------------------
+# Logging
+# -----------------------------------------------------------
+logging:
+  level:
+    com.taskengine.worker: DEBUG
+    net.devh.boot.grpc: INFO

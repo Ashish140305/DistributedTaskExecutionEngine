@@ -1,0 +1,9 @@
+--java_out=C:\Users\Ashish Chaurasiya\System Design\distributed-task-engine\shared-proto\target\generated-sources\protobuf
+--plugin=protoc-gen-0_1ce04adce09e004bed6aec19d31dc0522beb4a40=C:\Users\Ashish Chaurasiya\System Design\distributed-task-engine\shared-proto\target\protobuf-maven-plugin\generate\default\artifacts\protoc-gen-grpc-java-92ce625e52579658e5cc53e328b4be782c2cc773.exe
+--0_1ce04adce09e004bed6aec19d31dc0522beb4a40_out=C:\Users\Ashish Chaurasiya\System Design\distributed-task-engine\shared-proto\target\generated-sources\protobuf
+C:\Users\Ashish Chaurasiya\System Design\distributed-task-engine\shared-proto\src\main\proto\common.proto
+C:\Users\Ashish Chaurasiya\System Design\distributed-task-engine\shared-proto\src\main\proto\coordinator_service.proto
+C:\Users\Ashish Chaurasiya\System Design\distributed-task-engine\shared-proto\src\main\proto\worker_service.proto
+--proto_path=C:\Users\Ashish Chaurasiya\System Design\distributed-task-engine\shared-proto\src\main\proto
+--proto_path=C:\Users\Ashish Chaurasiya\System Design\distributed-task-engine\shared-proto\target\protobuf-maven-plugin\generate\default\archives\proto-google-common-protos-2.64.1-812c9e9dc140ef987c820f3e525b09be35b98c30
+--proto_path=C:\Users\Ashish Chaurasiya\System Design\distributed-task-engine\shared-proto\target\protobuf-maven-plugin\generate\default\archives\protobuf-java-4.35.1-4c577d2fbd052fd9d259119941d474f37d54b8c9

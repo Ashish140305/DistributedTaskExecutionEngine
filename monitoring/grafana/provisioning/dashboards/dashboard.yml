@@ -1,0 +1,17 @@
+# Grafana Dashboard Auto-Provisioning
+# Loads dashboard JSON files from the specified directory on startup
+
+apiVersion: 1
+
+providers:
+  - name: 'Task Engine Dashboards'
+    orgId: 1
+    folder: 'Task Engine'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/dashboards
+      foldersFromFilesStructure: false

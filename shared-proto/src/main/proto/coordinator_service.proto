@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package taskengine;
+
+option java_package = "com.taskengine.proto";
+option java_outer_classname = "CoordinatorServiceProto";
+option java_multiple_files = true;
+
+import "common.proto";
+
+// ============================================================
+// Coordinator gRPC Service
+// ============================================================
+// The coordinator acts as the master node. Workers call this
+// service to register, send heartbeats, and report task results.
+// Clients call SubmitJob, GetJobStatus, and CancelJob.
+// ============================================================
+
+service CoordinatorService {
+
+    // Worker registration — called once when a worker starts up
+    rpc RegisterWorker(RegisterWorkerRequest) returns (RegisterWorkerResponse);
+
+    // Worker heartbeat — called every 5 seconds by each worker
+    rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+
+    // Job submission — called by clients to submit a new job
+    rpc SubmitJob(SubmitJobRequest) returns (SubmitJobResponse);
+
+    // Job status query — called by clients to check job progress
+    rpc GetJobStatus(GetJobStatusRequest) returns (GetJobStatusResponse);
+
+    // Task completion report — called by workers when a task succeeds
+    rpc ReportTaskCompletion(ReportTaskCompletionRequest) returns (ReportTaskCompletionResponse);
+
+    // Task failure report — called by workers when a task fails
+    rpc ReportTaskFailure(ReportTaskFailureRequest) returns (ReportTaskFailureResponse);
+
+    // Job cancellation — called by clients to cancel a running job
+    rpc CancelJob(CancelJobRequest) returns (CancelJobResponse);
+}
+
+// ============================================================
+// Request / Response Messages
+// ============================================================
+
+// --- RegisterWorker ---
+
+message RegisterWorkerRequest {
+    string hostname = 1;
+    int32 grpc_port = 2;
+    int32 max_concurrent_tasks = 3;
+}
+
+message RegisterWorkerResponse {
+    string worker_id = 1;
+    bool success = 2;
+    string message = 3;
+}
+
+// --- Heartbeat ---
+
+message HeartbeatRequest {
+    string worker_id = 1;
+    int32 running_tasks = 2;
+    int32 available_slots = 3;
+    double cpu_usage = 4;
+    double memory_usage = 5;
+}
+
+message HeartbeatResponse {
+    bool acknowledged = 1;
+    // Coordinator can send back commands in the heartbeat response
+    repeated string cancel_task_ids = 2;
+}
+
+// --- SubmitJob ---
+
+message SubmitJobRequest {
+    string name = 1;
+    string type = 2;
+    string input_data = 3;
+    map<string, string> parameters = 4;
+}
+
+message SubmitJobResponse {
+    string job_id = 1;
+    bool success = 2;
+    string message = 3;
+}
+
+// --- GetJobStatus ---
+
+message GetJobStatusRequest {
+    string job_id = 1;
+}
+
+message GetJobStatusResponse {
+    JobInfo job = 1;
+    repeated TaskInfo tasks = 2;
+}
+
+// --- ReportTaskCompletion ---
+
+message ReportTaskCompletionRequest {
+    string worker_id = 1;
+    string task_id = 2;
+    string result_data = 3;
+    int64 execution_time_ms = 4;
+}
+
+message ReportTaskCompletionResponse {
+    bool acknowledged = 1;
+}
+
+// --- ReportTaskFailure ---
+
+message ReportTaskFailureRequest {
+    string worker_id = 1;
+    string task_id = 2;
+    string error_message = 3;
+    int64 execution_time_ms = 4;
+}
+
+message ReportTaskFailureResponse {
+    bool acknowledged = 1;
+    bool will_retry = 2;
+}
+
+// --- CancelJob ---
+
+message CancelJobRequest {
+    string job_id = 1;
+}
+
+message CancelJobResponse {
+    bool success = 1;
+    string message = 2;
+}

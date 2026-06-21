@@ -1,0 +1,15 @@
+com\taskengine\worker\executor\WordCountExecutor.class
+com\taskengine\worker\metrics\WorkerMetricsService.class
+com\taskengine\worker\registration\WorkerRegistrationService.class
+com\taskengine\worker\grpc\WorkerGrpcService.class
+com\taskengine\worker\grpc\CoordinatorGrpcClient.class
+com\taskengine\worker\engine\TaskExecutionEngine.class
+com\taskengine\worker\executor\DataAggregationExecutor.class
+com\taskengine\worker\executor\StringProcessingExecutor.class
+com\taskengine\worker\config\WorkerConfig.class
+com\taskengine\worker\executor\FileProcessingExecutor.class
+com\taskengine\worker\config\WorkerConfig$1.class
+com\taskengine\worker\WorkerApplication.class
+com\taskengine\worker\config\WorkerProperties.class
+com\taskengine\worker\executor\TaskExecutorFactory.class
+com\taskengine\worker\heartbeat\HeartbeatSender.class

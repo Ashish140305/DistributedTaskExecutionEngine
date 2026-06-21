@@ -1,0 +1,184 @@
+# ============================================================
+# Distributed Task Execution Engine — Docker Compose
+# ============================================================
+# Starts the full stack:
+#   - PostgreSQL (persistence)
+#   - Coordinator (master node)
+#   - Worker-1, Worker-2, Worker-3 (worker nodes)
+#   - Prometheus (metrics scraping)
+#   - Grafana (dashboards)
+#
+# Usage:
+#   docker compose up --build
+#   docker compose up --build --scale worker=5  (for custom worker count)
+# ============================================================
+
+services:
+
+  # ============================
+  # PostgreSQL Database
+  # ============================
+  postgres:
+    image: postgres:16-alpine
+    container_name: taskengine-postgres
+    environment:
+      POSTGRES_DB: taskengine
+      POSTGRES_USER: taskengine
+      POSTGRES_PASSWORD: taskengine
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskengine -d taskengine"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - taskengine-net
+
+  # ============================
+  # Coordinator Service (Master)
+  # ============================
+  coordinator:
+    build:
+      context: ..
+      dockerfile: coordinator-service/Dockerfile
+    container_name: taskengine-coordinator
+    ports:
+      - "8080:8080"   # REST API
+      - "9090:9090"   # gRPC
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskengine
+      SPRING_DATASOURCE_USERNAME: taskengine
+      SPRING_DATASOURCE_PASSWORD: taskengine
+      SPRING_FLYWAY_ENABLED: "true"
+      GRPC_SERVER_PORT: 9090
+      SERVER_PORT: 8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      start_period: 60s
+      retries: 5
+    networks:
+      - taskengine-net
+
+  # ============================
+  # Worker Nodes
+  # ============================
+  worker-1:
+    build:
+      context: ..
+      dockerfile: worker-service/Dockerfile
+    container_name: taskengine-worker-1
+    ports:
+      - "8081:8081"
+      - "9091:9091"
+    environment:
+      SERVER_PORT: 8081
+      GRPC_SERVER_PORT: 9091
+      GRPC_CLIENT_COORDINATOR_ADDRESS: "static://coordinator:9090"
+      GRPC_CLIENT_COORDINATOR_NEGOTIATION-TYPE: plaintext
+      WORKER_MAX_CONCURRENT_TASKS: 4
+      WORKER_HOSTNAME: worker-1
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    networks:
+      - taskengine-net
+
+  worker-2:
+    build:
+      context: ..
+      dockerfile: worker-service/Dockerfile
+    container_name: taskengine-worker-2
+    ports:
+      - "8082:8082"
+      - "9092:9092"
+    environment:
+      SERVER_PORT: 8082
+      GRPC_SERVER_PORT: 9092
+      GRPC_CLIENT_COORDINATOR_ADDRESS: "static://coordinator:9090"
+      GRPC_CLIENT_COORDINATOR_NEGOTIATION-TYPE: plaintext
+      WORKER_MAX_CONCURRENT_TASKS: 4
+      WORKER_HOSTNAME: worker-2
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    networks:
+      - taskengine-net
+
+  worker-3:
+    build:
+      context: ..
+      dockerfile: worker-service/Dockerfile
+    container_name: taskengine-worker-3
+    ports:
+      - "8083:8083"
+      - "9093:9093"
+    environment:
+      SERVER_PORT: 8083
+      GRPC_SERVER_PORT: 9093
+      GRPC_CLIENT_COORDINATOR_ADDRESS: "static://coordinator:9090"
+      GRPC_CLIENT_COORDINATOR_NEGOTIATION-TYPE: plaintext
+      WORKER_MAX_CONCURRENT_TASKS: 4
+      WORKER_HOSTNAME: worker-3
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    networks:
+      - taskengine-net
+
+  # ============================
+  # Prometheus (Metrics)
+  # ============================
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: taskengine-prometheus
+    ports:
+      - "9099:9090"
+    volumes:
+      - ../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+    depends_on:
+      - coordinator
+    networks:
+      - taskengine-net
+
+  # ============================
+  # Grafana (Dashboards)
+  # ============================
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: taskengine-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ../monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../monitoring/grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - taskengine-net
+
+volumes:
+  pgdata:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  taskengine-net:
+    driver: bridge
